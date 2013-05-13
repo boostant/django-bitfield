@@ -30,14 +30,12 @@ class BitFormField(IntegerField):
         self.choices = self.widget.choices = choices
 
     def clean(self, value):
+        result = BitHandler(0, list(k for k,v in self.choices))
         if not value:
-            return 0
-
-        # Assume an iterable which contains an item per flag that's enabled
-        result = BitHandler(0, [k for k, v in self.choices])
+            return result
         for k in value:
             try:
                 setattr(result, str(k), True)
             except AttributeError:
                 raise ValidationError('Unknown choice: %r' % (k,))
-        return int(result)
+        return result
